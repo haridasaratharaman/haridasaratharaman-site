@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Support bot quality review: an evaluation agent demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F6F3; --surface:#FFFFFF; --sunk:#ECEEEA; --ink:#1C2433; --muted:#5A6374; --line:#D8DCE2;
+  --pass:#1F7A5C; --pass-bg:#E2F2EB; --partial:#9A5F06; --partial-bg:#FBEFD6; --fail:#B03728; --fail-bg:#FBE4E0;
+  --accent:#2A4A96; --accent-bg:#E4EAF7; --hl:#F8DD9A; --v1:#9AA3B2; --v2:#2A4A96;
+  color-scheme:light;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#151A22; --surface:#1D232E; --sunk:#232B37; --ink:#E7EBF1; --muted:#A1AABA; --line:#313A48;
+    --pass:#5EC39F; --pass-bg:#1C3A31; --partial:#E6AC4C; --partial-bg:#3D3020; --fail:#F2806E; --fail-bg:#45251F;
+    --accent:#93B1FF; --accent-bg:#26324D; --hl:#6B5523; --v1:#5F6878; --v2:#93B1FF;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#151A22; --surface:#1D232E; --sunk:#232B37; --ink:#E7EBF1; --muted:#A1AABA; --line:#313A48;
+  --pass:#5EC39F; --pass-bg:#1C3A31; --partial:#E6AC4C; --partial-bg:#3D3020; --fail:#F2806E; --fail-bg:#45251F;
+  --accent:#93B1FF; --accent-bg:#26324D; --hl:#6B5523; --v1:#5F6878; --v2:#93B1FF;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 120px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Schibsted Grotesk",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.55;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:14px 0 6px}
+.brand b{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.brand span{color:var(--muted);font-size:14px}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px 0}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs a{flex:none;text-decoration:none;color:var(--muted);font-weight:500;font-size:15px;padding:10px 10px 11px;border-bottom:2px solid transparent}
+nav.tabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--ink)}
+main{padding:28px 0 56px}
+section[data-view]{animation:none}
+h1{font-size:clamp(30px,5.4vw,48px);line-height:1.08;letter-spacing:-.025em;margin:0 0 16px;font-weight:700;max-width:16ch}
+h2{font-size:clamp(22px,3.4vw,28px);line-height:1.2;letter-spacing:-.015em;margin:0 0 10px;font-weight:700}
+h3{font-size:17px;margin:0 0 6px;font-weight:600}
+p{margin:0 0 12px;max-width:68ch}
+.lede{font-size:18px;color:var(--muted);max-width:56ch}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+.hero{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:start}
+@media (max-width:820px){.hero{grid-template-columns:1fr;gap:28px}}
+.note{font-size:14px;color:var(--muted);border-left:3px solid var(--line);padding-left:12px;margin-top:18px}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.btn{display:inline-flex;align-items:center;gap:8px;font:inherit;font-weight:600;font-size:15px;padding:10px 16px;border-radius:8px;border:1px solid var(--ink);background:var(--ink);color:var(--surface);text-decoration:none;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn:disabled{opacity:.5;cursor:default}
+
+/* Inspected transcript: the signature element */
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 18px 14px;position:relative}
+.sheet .meta{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted);margin-bottom:12px}
+.msg{display:grid;grid-template-columns:72px 1fr;gap:10px;padding:8px 0;border-top:1px dashed var(--line)}
+.msg:first-of-type{border-top:0}
+.who{font-size:13px;color:var(--muted);padding-top:2px}
+.msg.bot .who{color:var(--accent);font-weight:600}
+mark{background:var(--hl);color:inherit;padding:0 2px;border-radius:2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.margin{margin:10px 0 2px;border:1.5px solid var(--fail);border-radius:10px;padding:10px 12px;background:var(--fail-bg)}
+.margin h4{margin:0 0 4px;font-size:14px;color:var(--fail)}
+.margin p{font-size:14px;margin:0}
+.scoreline{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;padding:3px 9px 3px 7px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.tag .d{font-weight:500;color:var(--ink)}
+.tag.p2{color:var(--pass);background:var(--pass-bg)}
+.tag.p1{color:var(--partial);background:var(--partial-bg)}
+.tag.p0{color:var(--fail);background:var(--fail-bg)}
+.tag.plain{color:var(--muted);background:transparent;border-color:var(--line)}
+
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin:40px 0 0;border-top:1px solid var(--line)}
+.flow div{padding:14px 14px 0 0}
+.flow b{display:block;font-size:15px;margin-bottom:2px}
+.flow span{font-size:14px;color:var(--muted)}
+.flow i{font-style:normal;font-size:13px;color:var(--muted)}
+@media (max-width:820px){.flow{grid-template-columns:1fr 1fr}}
+@media (max-width:480px){.flow{grid-template-columns:1fr}}
+
+.headline{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:36px;border:1px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden}
+.headline > div{padding:16px 18px;border-left:1px solid var(--line)}
+.headline > div:first-child{border-left:0}
+.headline .num{font-size:30px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.headline .lbl{font-size:14px;color:var(--muted)}
+@media (max-width:700px){.headline{grid-template-columns:1fr}.headline > div{border-left:0;border-top:1px solid var(--line)}.headline > div:first-child{border-top:0}}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:820px){.grid2{grid-template-columns:1fr}}
+
+.bars{display:grid;gap:14px;margin-top:10px}
+.bar{display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:center}
+.bar .name{font-size:15px;font-weight:500}
+.track{display:grid;gap:4px}
+.line{display:grid;grid-template-columns:28px 1fr 46px;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+.fill{height:10px;background:var(--sunk);border-radius:5px;overflow:hidden}
+.fill i{display:block;height:100%;border-radius:5px}
+.line .val{text-align:right;color:var(--ink);font-weight:600}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--muted);margin-top:4px}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;background:var(--c)}
+
+.callout{border:1.5px solid var(--fail);background:var(--fail-bg);border-radius:14px;padding:18px 20px;margin-top:20px}
+.callout h3{color:var(--fail)}
+
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:14px}
+td.n,th.n{text-align:right}
+.tablewrap{overflow-x:auto;margin-top:8px}
+.mini{display:inline-block;width:70px;height:8px;background:var(--sunk);border-radius:4px;vertical-align:middle;margin-left:8px;overflow:hidden}
+.mini i{display:block;height:100%;background:var(--fail)}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px}
+.chip{font:inherit;font-size:14px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.count{font-size:14px;color:var(--muted);margin:8px 0 4px}
+
+details.conv{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-top:10px}
+details.conv summary{list-style:none;cursor:pointer;padding:14px 16px;display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center}
+details.conv summary::-webkit-details-marker{display:none}
+details.conv summary .t{font-weight:600}
+details.conv summary .s{font-size:13px;color:var(--muted)}
+details.conv[open] summary{border-bottom:1px solid var(--line)}
+.convbody{padding:6px 16px 16px}
+.judge{margin-top:12px;background:var(--sunk);border-radius:10px;padding:12px 14px;font-size:14px}
+.judge b{display:block;margin-bottom:2px}
+.cmp{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+
+ol.steps{list-style:none;padding:0;margin:14px 0 0;counter-reset:s}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+ol.steps li::before{content:counter(s);width:28px;height:28px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center;font-size:13px;font-weight:700}
+ol.steps li.flag::before{border-color:var(--fail);color:var(--fail)}
+ol.steps .tool{font-size:14px;color:var(--accent);font-weight:600}
+ol.steps .out{font-size:14px;color:var(--muted);margin:2px 0 0}
+.policy{border-left:3px solid var(--accent);padding:4px 0 4px 12px;margin:8px 0;font-size:14px}
+.fix ol{margin:8px 0 0;padding-left:20px}
+.fix li{margin:4px 0}
+.status{margin-top:14px;font-size:14px;font-weight:600}
+.status.ok{color:var(--pass)} .status.back{color:var(--partial)}
+
+.matrix{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px;max-width:420px;margin-top:12px;font-size:14px}
+.matrix div{padding:12px;border-radius:8px;text-align:center}
+.matrix .h{color:var(--muted);padding:6px}
+.matrix .agree{background:var(--pass-bg);color:var(--pass);font-weight:700;font-size:20px}
+.matrix .dis{background:var(--partial-bg);color:var(--partial);font-weight:700;font-size:20px}
+
+footer{border-top:1px solid var(--line);padding:22px 0 30px;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>Bot quality review</b><span>An evaluation agent demo</span></div>
+    <nav class="tabs" aria-label="Sections">
+      <a href="#overview">Overview</a>
+      <a href="#results">Results</a>
+      <a href="#conversations">Conversations</a>
+      <a href="#themes">Themes</a>
+      <a href="#agent">Agent</a>
+      <a href="#review">Human review</a>
+      <a href="#method">Method</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- OVERVIEW -->
+<section data-view="overview">
+  <div class="hero">
+    <div>
+      <h1>Why is the support bot failing customers?</h1>
+      <p class="lede">An agent that scores every customer conversation against a quality rubric, groups conversations into themes, finds what broke between two bot versions, and proposes a fix for a human to approve.</p>
+      <div class="btnrow">
+        <a class="btn" href="#agent">See the investigation</a>
+        <a class="btn ghost" href="#conversations">Browse conversations</a>
+      </div>
+      <p class="note">Synthetic conversations from a fictional home-goods store, Larkspur Home. Scores are illustrative of what the agent produces. No real customer or company data.</p>
+    </div>
+    <div class="sheet" aria-label="Example of a scored conversation">
+      <div class="meta"><span>Conversation C-101, bot v2</span><span>Refunds and returns</span></div>
+      <div class="msg"><div class="who">Customer</div><div>I bought the Arlo floor lamp on clearance and it doesn’t fit my room. Can I return it?</div></div>
+      <div class="msg bot"><div class="who">Bot</div><div>I’m so sorry it didn’t work out! <mark>I’ve gone ahead and approved a full refund</mark>, and <mark>you’ll see it in 3–5 days</mark>.</div></div>
+      <div class="margin">
+        <h4>Judge: policy safety fails</h4>
+        <p>Clearance items are final sale (policy 3.2), so the bot promised a refund it can’t give. It also quoted 3–5 days; the policy says 7–10 business days.</p>
+      </div>
+      <div class="scoreline" id="heroTags"></div>
+    </div>
+  </div>
+
+  <div class="headline" id="headline"></div>
+
+  <div class="flow" aria-label="How the agent works">
+    <div><b>Score</b><span>Grade each reply on four rubric dimensions, with a reason.</span></div>
+    <div><b>Group</b><span>Cluster conversations into customer themes.</span></div>
+    <div><b>Compare</b><span>Diff scores between bot v1 and v2 by theme.</span></div>
+    <div><b>Investigate</b><span>Read failures, check policy, find the cause.</span></div>
+    <div><b>Propose</b><span>Draft a fix and wait for human approval.</span></div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section data-view="results" hidden>
+  <h2>Results: bot v1 compared with v2</h2>
+  <p class="muted">Bot v2 rewrote the system prompt to be warmer and more decisive, including the line “Always make it right for the customer.” Same <span id="nConv"></span> conversations, same judge.</p>
+  <div class="panel">
+    <h3>Pass rate by rubric dimension</h3>
+    <div class="legend"><span style="--c:var(--v1)">Bot v1</span><span style="--c:var(--v2)">Bot v2</span></div>
+    <div class="bars" id="dimBars"></div>
+  </div>
+  <div class="callout">
+    <h3>Regression caught</h3>
+    <p id="regText"></p>
+    <a class="btn ghost" href="#agent">See how the agent found it</a>
+  </div>
+</section>
+
+<!-- CONVERSATIONS -->
+<section data-view="conversations" hidden>
+  <h2>Conversations</h2>
+  <p class="muted">Open any conversation to see the transcript, the judge’s scores and reasons, and how bot v1 scored on the same request.</p>
+  <div class="chips" id="themeChips" role="group" aria-label="Filter by theme"></div>
+  <div class="chips" role="group" aria-label="Filter by result">
+    <button class="chip" id="failOnly" aria-pressed="false">Failed in v2 only</button>
+  </div>
+  <div class="count" id="convCount" aria-live="polite"></div>
+  <div id="convList"></div>
+</section>
+
+<!-- THEMES -->
+<section data-view="themes" hidden>
+  <h2>Themes</h2>
+  <p class="muted">The agent grouped conversations by what the customer needed. Policy-safety failure rate shows where v2 started making promises it shouldn’t.</p>
+  <div class="panel">
+    <div class="tablewrap"><table id="themeTable"></table></div>
+  </div>
+</section>
+
+<!-- AGENT -->
+<section data-view="agent" hidden>
+  <h2>The agent’s investigation</h2>
+  <p class="muted">The agent plans its own steps and calls tools. It stops before changing anything and asks a human to approve the fix.</p>
+  <div class="panel">
+    <ol class="steps" id="steps"></ol>
+  </div>
+  <div class="grid2">
+    <div class="panel">
+      <h3>Finding</h3>
+      <p id="finding"></p>
+      <p class="small muted">Evidence: <span id="evidence"></span></p>
+      <div class="policy"><b>Policy 3.1</b> Returns are accepted within 30 days. Exceptions require a human agent.</div>
+      <div class="policy"><b>Policy 3.2</b> Clearance items are final sale.</div>
+      <div class="policy"><b>Policy 3.3</b> Opened bedding and mattresses can’t be returned.</div>
+      <div class="policy"><b>Policy 3.6</b> Refunds go to the original payment method.</div>
+    </div>
+    <div class="panel fix">
+      <h3>Proposed fix</h3>
+      <ol>
+        <li>Replace “Always make it right for the customer” with “Offer only actions the return policy allows.”</li>
+        <li>Retrieve the return-eligibility rules (policy 3.1–3.6) before any refund, exception, or payment change.</li>
+        <li>Hand final-sale, late, and opened-item requests to a human agent.</li>
+        <li>Add the refund conversations to the regression test set and re-run before release.</li>
+      </ol>
+      <p class="small muted">Expected outcome: policy safety returns to v1 levels while keeping v2’s gains in resolution and tone.</p>
+      <div class="btnrow">
+        <button class="btn" id="approve">Approve fix</button>
+        <button class="btn ghost" id="sendBack">Send back to agent</button>
+      </div>
+      <div class="status" id="fixStatus" aria-live="polite">Waiting for human approval.</div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEW -->
+<section data-view="review" hidden>
+  <h2>Can the judge be trusted?</h2>
+  <p class="muted">A human reviewer labeled a sample of conversations as pass or fail without seeing the judge’s scores. Agreement tells us whether the judge can grade the rest on its own.</p>
+  <div class="grid2">
+    <div class="panel">
+      <div class="headline" style="margin-top:0;border:0;grid-template-columns:1fr 1fr"><div style="padding:0"><div class="num" id="agreePct"></div><div class="lbl">Judge and human agree</div></div><div style="padding:0 0 0 18px"><div class="num" id="agreeN"></div><div class="lbl">Conversations labeled</div></div></div>
+      <div class="matrix" id="matrix"></div>
+    </div>
+    <div class="panel">
+      <h3>Where they disagreed, and the rubric change it led to</h3>
+      <div id="disagree"></div>
+    </div>
+  </div>
+</section>
+
+<!-- METHOD -->
+<section data-view="method" hidden>
+  <h2>Method</h2>
+  <div class="panel">
+    <h3>The rubric</h3>
+    <p class="small muted">A conversation passes overall when it’s resolved and no dimension fails.</p>
+    <div class="tablewrap"><table>
+      <tr><th>Dimension</th><th>Pass</th><th>Partial</th><th>Fail</th></tr>
+      <tr><td><b>Resolved</b></td><td>Issue fully fixed in the chat</td><td>Valid next step offered, not yet done</td><td>Not fixed or wrong path</td></tr>
+      <tr><td><b>Accurate</b></td><td>All facts match policy and product data</td><td>Minor detail off</td><td>Wrong fact the customer could act on</td></tr>
+      <tr><td><b>Policy safe</b></td><td>Only offers allowed actions</td><td>Vague or borderline promise</td><td>Promises an action policy doesn’t allow</td></tr>
+      <tr><td><b>Tone</b></td><td>Clear, warm, concise</td><td>Robotic or wordy</td><td>Rude or dismissive</td></tr>
+    </table></div>
+  </div>
+  <div class="grid2">
+    <div class="panel">
+      <h3>Models</h3>
+      <div class="tablewrap"><table>
+        <tr><th>Role</th><th>Model</th><th>Why</th></tr>
+        <tr><td>Support bot</td><td>Claude Haiku 5.5</td><td>Fast and cheap, like many production bots</td></tr>
+        <tr><td>Judge and agent</td><td>Claude Sonnet 5.5</td><td>Reasoning quality for scoring and investigation</td></tr>
+        <tr><td>Spot check</td><td>Claude Opus 5.5</td><td>Re-grades disputed cases only</td></tr>
+      </table></div>
+      <p class="small muted" style="margin-top:10px">The judge is a different, stronger model than the bot, which avoids a model grading its own work too generously.</p>
+    </div>
+    <div class="panel">
+      <h3>What’s real and what’s illustrative</h3>
+      <p class="small">Real: the rubric, the evaluation design, the agent workflow, and every number on this site, which is calculated from the conversations shown.</p>
+      <p class="small">Illustrative: the store, its policies, the conversations, and the scores are synthetic examples written to show how the system behaves.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">Built by Hari Dasaratharaman as a product demo. Synthetic data; not affiliated with any employer.</div>
+</footer>
+
+<script>
+const DIMS=[["res","Resolved"],["acc","Accurate"],["pol","Policy safe"],["tone","Tone"]];
+const LV=["Fail","Partial","Pass"], SYM=["✕","◐","✓"];
+const THEMES={refunds:"Refunds and returns",delivery:"Delivery",damaged:"Damaged or wrong items",promo:"Discounts",account:"Account",product:"Product questions"};
+const S=(r,a,p,t)=>({res:r,acc:a,pol:p,tone:t});
+const C=[
+{id:"C-101",th:"refunds",ti:"Return a clearance lamp",turns:[["c","I bought the Arlo floor lamp on clearance and it doesn’t fit my room. Can I return it?"],["b","I’m so sorry it didn’t work out! I’ve gone ahead and approved a full refund, and you’ll see it in 3–5 days."],["c","Great, thanks!"]],v2:S(2,0,0,2),v1:S(0,2,2,1),n:"Promised a refund on a final-sale item (policy 3.2) and quoted 3–5 days instead of 7–10 business days.",h:"fail"},
+{id:"C-102",th:"refunds",ti:"When does my refund arrive",turns:[["c","I returned my rug last week. When do I get my money back?"],["b","Refunds are issued within 7–10 business days after the warehouse receives your return. Yours was scanned on Tuesday, so expect it by the 14th."]],v2:S(2,2,2,2),v1:S(2,2,2,1),n:"Correct window per policy 3.4, with a concrete date.",h:"pass"},
+{id:"C-103",th:"refunds",ti:"Return after 45 days",turns:[["c","Can I still return a duvet I bought 45 days ago? Never opened."],["b","Absolutely, we want you to love your home. I’ll make an exception and send a return label now."]],v2:S(2,1,0,2),v1:S(1,2,2,1),n:"Granted an exception the bot isn’t allowed to make. Policy 3.1: 30 days, and exceptions need a human agent.",h:"fail"},
+{id:"C-104",th:"refunds",ti:"Refund to a different card",turns:[["c","Can you refund my order to a different card? The old one was cancelled."],["b","No problem, I’ve updated the refund to go to your new card."]],v2:S(2,0,0,2),v1:S(1,2,2,2),n:"Policy 3.6: refunds go to the original payment method. Promised something the bot can’t do.",h:"fail"},
+{id:"C-105",th:"refunds",ti:"Return a gift without a receipt",turns:[["c","I got a vase as a gift. No receipt. Can I return it?"],["b","Gifts can be returned for store credit with the order number or gift receipt. If you have neither, I can connect you with an agent who can look it up by the sender’s email."]],v2:S(1,2,2,2),v1:S(1,2,2,1),n:"Correct policy and a sensible handoff; not fully resolved in the chat."},
+{id:"C-106",th:"refunds",ti:"Return an opened mattress",turns:[["c","I opened the mattress and slept on it two nights. It’s too firm. Can I return it?"],["b","Totally understandable! I’ve scheduled a free pickup and you’ll get a full refund."]],v2:S(2,0,0,2),v1:S(0,2,2,1),n:"Opened mattresses can’t be returned (policy 3.3). Promised a pickup and refund that won’t happen."},
+{id:"C-201",th:"delivery",ti:"Order is three days late",turns:[["c","My order was supposed to arrive Monday. It’s Thursday."],["b","Sorry for the wait. Your package is at the Riverside depot and is out for delivery tomorrow. If it hasn’t arrived by Saturday, reply here and I’ll open a claim."]],v2:S(2,2,2,2),v1:S(1,2,2,1),n:"Clear status, next step, and fallback.",h:"pass"},
+{id:"C-202",th:"delivery",ti:"Change delivery address",turns:[["c","Can I change the delivery address? I moved."],["b","Your order has already shipped, so I can’t change the address. I can ask the carrier to hold it at a pickup point near your new home. Want me to do that?"],["c","Yes please."],["b","Done. It will be held at the Elm Street locker, and you’ll get a pickup code by text."]],v2:S(1,2,2,2),v1:S(0,2,2,1),n:"Accurate and safe; judge rated resolution partial because the address itself wasn’t changed.",h:"pass"},
+{id:"C-203",th:"delivery",ti:"Marked delivered, not here",turns:[["c","Tracking says delivered but there’s nothing here."],["b","That’s frustrating. Please check with neighbors and your building’s mailroom. If it hasn’t turned up in 24 hours, reply here and I’ll open a carrier claim and send a replacement."]],v2:S(1,2,2,2),v1:S(1,2,2,0),n:"Correct process; resolution depends on a follow-up."},
+{id:"C-204",th:"delivery",ti:"Late express shipping",turns:[["c","I paid for express and it came late. Can I get the shipping fee back?"],["b","Yes, late express orders qualify for a shipping refund. I’ve refunded the $14.95 express fee to your original card."]],v2:S(2,2,2,2),v1:S(2,2,2,1),n:"Allowed by policy 4.2 and completed in the chat.",h:"pass"},
+{id:"C-205",th:"delivery",ti:"Saturday sofa delivery",turns:[["c","Can you deliver my sofa on a Saturday?"],["b","Sofa deliveries run Monday to Friday in your area. I can book Friday 9–12. Should I book it?"],["c","Ok."],["b","Booked. You’ll get a reminder the day before."]],v2:S(2,2,2,1),v1:S(1,2,2,1),n:"Resolved; tone slightly abrupt."},
+{id:"C-301",th:"damaged",ti:"Cracked mugs",turns:[["c","Two of the mugs arrived cracked."],["b","I’m sorry about that. I’ve sent replacements for the two mugs at no cost, and there’s no need to return the broken ones. They’ll ship in 2 days."]],v2:S(2,2,2,2),v1:S(1,2,2,1),n:"Resolved within policy 5.1.",h:"pass"},
+{id:"C-302",th:"damaged",ti:"Scratched dining table",turns:[["c","My dining table has a long scratch on the top."],["b","Sorry to see that. Could you send a photo?"],["c","[Photo attached]"],["b","Thanks. I can offer a 20% partial refund or a full replacement. Which would you prefer?"]],v2:S(2,1,1,2),v1:S(1,2,2,1),n:"Offered 20%; the bot’s limit without approval is 15% (policy 5.3). Scored partial.",h:"fail"},
+{id:"C-303",th:"damaged",ti:"Wrong pillow color",turns:[["c","I ordered the sage throw pillow and got mustard."],["b","Sorry for the mix-up! I’ll send the sage pillow today. You can keep the mustard one or donate it."]],v2:S(2,2,2,2),v1:S(2,2,2,2),n:"Resolved within policy."},
+{id:"C-304",th:"damaged",ti:"Shelf arrived broken",turns:[["c","The shelf arrived in pieces. I want my money back, not a replacement."],["b","Understood. I’ve started a full refund to your original card; you’ll see it in 7–10 business days. No need to return the pieces."]],v2:S(2,2,2,2),v1:S(1,2,2,1),n:"Correct refund method and timing.",h:"pass"},
+{id:"C-401",th:"promo",ti:"Expired discount code",turns:[["c","SPRING20 isn’t working at checkout."],["b","SPRING20 ended on April 30. If this is your first order, WELCOME10 gives you 10% off."]],v2:S(2,2,2,1),v1:S(1,2,2,1),n:"Accurate alternative; a little curt."},
+{id:"C-402",th:"promo",ti:"Price dropped after purchase",turns:[["c","The chair I bought last week is now $40 cheaper."],["b","We offer price adjustments within 14 days. I’ve refunded the $40 difference to your card."]],v2:S(2,2,2,2),v1:S(0,2,2,1),n:"Allowed by policy 6.1 and completed.",h:"pass"},
+{id:"C-403",th:"promo",ti:"Combine two codes",turns:[["c","Can I use two discount codes together?"],["b","Only one code can be used per order. Of the two you have, HOME15 saves you more."]],v2:S(2,2,2,2),v1:S(2,2,2,1),n:"Accurate and helpful."},
+{id:"C-404",th:"promo",ti:"Birthday discount",turns:[["c","Do you give a birthday discount?"],["b","Members get a 10% birthday code by email during their birthday month. You can join for free in your account settings."]],v2:S(2,2,2,2),v1:S(2,2,2,2),n:"Accurate."},
+{id:"C-501",th:"account",ti:"Can’t log in",turns:[["c","I keep getting ‘wrong password’ but I know it’s right."],["b","Let’s reset it. I’ve sent a reset link to the email on your account. It expires in 30 minutes."]],v2:S(2,2,2,2),v1:S(2,2,2,1),n:"Resolved.",h:"pass"},
+{id:"C-502",th:"account",ti:"Delete my account",turns:[["c","Please delete my account and data."],["b","I can’t delete accounts from chat, but I’ve opened a deletion request. You’ll get a confirmation email within 48 hours."]],v2:S(2,2,2,2),v1:S(1,2,2,1),n:"Correct process."},
+{id:"C-503",th:"account",ti:"Change email address",turns:[["c","How do I change my email address?"],["b","Go to Account, then Profile, and select Edit next to your email. We’ll send a code to confirm the new address."]],v2:S(2,2,2,2),v1:S(2,2,2,2),n:"Accurate steps."},
+{id:"C-601",th:"product",ti:"Will the sofa fit my door",turns:[["c","Will the Halden sofa fit through a 30-inch door?"],["b","The Halden is 34 inches deep, or 31 inches with the legs off, so it likely won’t fit a 30-inch door. The Mira ships in two boxes and would fit."]],v2:S(2,2,2,2),v1:S(1,1,2,1),n:"Accurate dimensions and a useful alternative.",h:"pass"},
+{id:"C-602",th:"product",ti:"Lost assembly instructions",turns:[["c","I lost the instructions for my bookshelf."],["b","Here’s the PDF for the Oak 5-shelf bookcase. Step 4 is where most people get stuck: the back panel goes in before the top."]],v2:S(2,2,2,2),v1:S(2,2,2,2),n:"Resolved."},
+{id:"C-603",th:"product",ti:"Is the rug machine washable",turns:[["c","Can I machine wash the Juniper rug?"],["b","Yes, the Juniper rug is machine washable on a gentle cycle."]],v2:S(2,0,2,2),v1:S(2,0,2,2),n:"Product sheet says spot clean only. The customer could ruin the rug. Present in both versions.",h:"fail"}
+];
+const overall=s=>s.res===2&&Object.values(s).every(v=>v>0);
+const pct=(a,b)=>b?Math.round(100*a/b):0;
+const $=id=>document.getElementById(id);
+const tag=(v,d)=>`<span class="tag p${v}"><span aria-hidden="true">${SYM[v]}</span>${d?`<span class="d">${d}</span>`:""} ${LV[v]}</span>`;
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+
+// Stats
+const N=C.length;
+const passV=v=>C.filter(c=>overall(c[v])).length;
+const dimRate=(v,k)=>pct(C.filter(c=>c[v][k]===2).length,N);
+const ref=C.filter(c=>c.th==="refunds");
+const polFail=(arr,v)=>arr.filter(c=>c[v].pol===0).length;
+
+// Overview
+$("heroTags").innerHTML=DIMS.map(([k,d])=>tag(C[0].v2[k],d)).join("");
+$("headline").innerHTML=`
+<div><div class="num">${pct(passV("v1"),N)}% to ${pct(passV("v2"),N)}%</div><div class="lbl">Overall pass rate, bot v1 to v2</div></div>
+<div><div class="num">${polFail(ref,"v1")} to ${polFail(ref,"v2")} of ${ref.length}</div><div class="lbl">Refund conversations failing policy safety</div></div>
+<div><div class="num" data-agree></div><div class="lbl">Judge agreement with human reviewer</div></div>`;
+
+// Results
+$("nConv").textContent=N;
+$("dimBars").innerHTML=DIMS.map(([k,d])=>{const a=dimRate("v1",k),b=dimRate("v2",k);return `
+<div class="bar"><div class="name">${d}</div><div class="track">
+<div class="line"><span>v1</span><span class="fill"><i style="width:${a}%;background:var(--v1)"></i></span><span class="val">${a}%</span></div>
+<div class="line"><span>v2</span><span class="fill"><i style="width:${b}%;background:var(--v2)"></i></span><span class="val">${b}%</span></div>
+</div></div>`}).join("")+`<div class="bar"><div class="name"><b>Overall</b></div><div class="track">
+<div class="line"><span>v1</span><span class="fill"><i style="width:${pct(passV("v1"),N)}%;background:var(--v1)"></i></span><span class="val">${pct(passV("v1"),N)}%</span></div>
+<div class="line"><span>v2</span><span class="fill"><i style="width:${pct(passV("v2"),N)}%;background:var(--v2)"></i></span><span class="val">${pct(passV("v2"),N)}%</span></div></div></div>`;
+$("regText").textContent=`v2 lifted resolution from ${dimRate("v1","res")}% to ${dimRate("v2","res")}% of conversations, but policy safety dropped from ${dimRate("v1","pol")}% to ${dimRate("v2","pol")}%. Every new policy failure is in Refunds and returns, where ${polFail(ref,"v2")} of ${ref.length} conversations now promise refunds or exceptions the policy doesn’t allow. A dashboard of averages would have shown v2 as a clear win.`;
+
+// Conversations
+let fTheme="all",fFail=false;
+$("themeChips").innerHTML=[["all","All"],...Object.entries(THEMES)].map(([k,v])=>`<button class="chip" data-th="${k}" aria-pressed="${k==="all"}">${v}</button>`).join("");
+$("themeChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;fTheme=b.dataset.th;renderConv()});
+$("failOnly").addEventListener("click",()=>{fFail=!fFail;renderConv()});
+function renderConv(){
+  document.querySelectorAll("#themeChips .chip").forEach(b=>b.setAttribute("aria-pressed",b.dataset.th===fTheme));
+  $("failOnly").setAttribute("aria-pressed",fFail);
+  const list=C.filter(c=>(fTheme==="all"||c.th===fTheme)&&(!fFail||!overall(c.v2)));
+  $("convCount").textContent=`${list.length} of ${N} conversations`;
+  $("convList").innerHTML=list.length?list.map(c=>{const ok=overall(c.v2);return `
+<details class="conv"><summary><div><div class="t">${c.id}: ${c.ti}</div><div class="s">${THEMES[c.th]}</div></div>${tag(ok?2:0,"v2")}</summary>
+<div class="convbody">
+${c.turns.map(([w,t])=>`<div class="msg ${w==="b"?"bot":""}"><div class="who">${w==="b"?"Bot v2":"Customer"}</div><div>${esc(t)}</div></div>`).join("")}
+<div class="judge"><b>Judge, bot v2</b>${esc(c.n)}<div class="cmp">${DIMS.map(([k,d])=>tag(c.v2[k],d)).join("")}</div></div>
+<div class="judge"><b>Same request, bot v1</b><div class="cmp">${DIMS.map(([k,d])=>tag(c.v1[k],d)).join("")}</div></div>
+${c.h?`<div class="judge"><b>Human reviewer</b>Labeled ${c.h}. ${(c.h==="pass")===ok?"Agrees with the judge.":"Disagrees with the judge; see Human review."}</div>`:""}
+</div></details>`}).join(""):`<p class="muted">No conversations match these filters. Choose another theme or turn off “Failed in v2 only”.</p>`;
+}
+renderConv();
+
+// Themes
+$("themeTable").innerHTML=`<tr><th>Theme</th><th class="n">Conversations</th><th class="n">Pass, v1</th><th class="n">Pass, v2</th><th>Policy-safety failures, v1 to v2</th></tr>`+
+Object.entries(THEMES).map(([k,v])=>{const a=C.filter(c=>c.th===k);const p1=polFail(a,"v1"),p2=polFail(a,"v2");return `<tr${p2>p1?' style="background:var(--fail-bg)"':""}><td><b>${v}</b></td><td class="n">${a.length}</td><td class="n">${pct(a.filter(c=>overall(c.v1)).length,a.length)}%</td><td class="n">${pct(a.filter(c=>overall(c.v2)).length,a.length)}%</td><td>${p1} to ${p2}<span class="mini" aria-hidden="true"><i style="width:${pct(p2,a.length)}%"></i></span></td></tr>`}).join("");
+
+// Agent
+const failRefIds=ref.filter(c=>c.v2.pol===0).map(c=>c.id);
+const steps=[
+["score_conversations",`Scored ${N} conversations from each bot version on four dimensions, with a reason for every score.`],
+["cluster_themes",`Grouped conversations into ${Object.keys(THEMES).length} themes based on what the customer needed.`],
+["compare_versions",`v2 passes ${pct(passV("v2"),N)}% overall, up from ${pct(passV("v1"),N)}%. But policy safety fell from ${dimRate("v1","pol")}% to ${dimRate("v2","pol")}%.`,1],
+["drill_down",`All ${polFail(ref,"v2")} new policy failures are in Refunds and returns (${failRefIds.join(", ")}). No other theme got worse.`,1],
+["read_transcripts",`Each failing reply promises an action outright: a refund, an exception, or a card change. v1 declined or escalated the same requests.`],
+["lookup_policy","Retrieved return policy 3.1–3.6. The promised actions break 3.1, 3.2, 3.3, and 3.6."],
+["diff_prompts","The v2 system prompt added “Always make it right for the customer,” with no policy check before acting."],
+["draft_fix","Wrote a four-part fix and paused for human approval."]
+];
+$("steps").innerHTML=steps.map(([t,o,f])=>`<li class="${f?"flag":""}"><div><div class="tool">${t}</div><p class="out">${o}</p></div></li>`).join("");
+$("finding").textContent=`The v2 prompt change made the bot more decisive, and in refund conversations it now promises actions the return policy doesn’t allow. ${polFail(ref,"v2")} of ${ref.length} refund conversations fail policy safety in v2, compared with ${polFail(ref,"v1")} in v1.`;
+$("evidence").innerHTML=failRefIds.map(id=>`<a href="#conversations" data-goto="refunds">${id}</a>`).join(", ");
+document.addEventListener("click",e=>{const a=e.target.closest("[data-goto]");if(a){fTheme=a.dataset.goto;fFail=true;renderConv()}});
+$("approve").addEventListener("click",()=>{$("fixStatus").className="status ok";$("fixStatus").textContent="Approved. The fix is queued for a re-test on the refund conversations before release.";});
+$("sendBack").addEventListener("click",()=>{$("fixStatus").className="status back";$("fixStatus").textContent="Sent back. The agent will revise the fix and ask again.";});
+
+// Review
+const lab=C.filter(c=>c.h);
+const jp=c=>overall(c.v2), hp=c=>c.h==="pass";
+const pp=lab.filter(c=>jp(c)&&hp(c)).length, ff=lab.filter(c=>!jp(c)&&!hp(c)).length, pf=lab.filter(c=>jp(c)&&!hp(c)).length, fp=lab.filter(c=>!jp(c)&&hp(c)).length;
+const ag=pct(pp+ff,lab.length);
+$("agreePct").textContent=ag+"%"; $("agreeN").textContent=lab.length;
+document.querySelector("[data-agree]").textContent=ag+"%";
+$("matrix").innerHTML=`<div class="h"></div><div class="h">Human: pass</div><div class="h">Human: fail</div>
+<div class="h">Judge: pass</div><div class="agree">${pp}</div><div class="dis">${pf}</div>
+<div class="h">Judge: fail</div><div class="dis">${fp}</div><div class="agree">${ff}</div>`;
+const fixes={"C-202":"Rubric change: if the customer accepts a valid next step and it’s completed in the chat, score Resolved as pass.","C-302":"Rubric change: any amount above an approval limit is a policy-safety fail, not a partial."};
+$("disagree").innerHTML=lab.filter(c=>jp(c)!==hp(c)).map(c=>`<div class="judge"><b>${c.id}: ${c.ti}</b>Judge said ${jp(c)?"pass":"fail"}, human said ${c.h}. ${esc(c.n)}<p class="small" style="margin:8px 0 0">${fixes[c.id]||""}</p></div>`).join("")+`<p class="small muted" style="margin-top:12px">At ${ag}% agreement, the judge is reliable enough to grade the full set, with disputed cases re-checked by a stronger model.</p>`;
+
+// Routing
+const VIEWS=["overview","results","conversations","themes","agent","review","method"];
+function route(){
+  const h=location.hash.slice(1); const v=VIEWS.includes(h)?h:"overview";
+  document.querySelectorAll("section[data-view]").forEach(s=>s.hidden=s.dataset.view!==v);
+  document.querySelectorAll("nav.tabs a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+v?"page":"false"));
+  const cur=document.querySelector('nav.tabs a[aria-current="page"]'); if(cur&&cur.scrollIntoView) cur.scrollIntoView({block:"nearest",inline:"nearest"});
+  window.scrollTo(0,0);
+}
+window.addEventListener("hashchange",route); route();
+</script>
+</body>
+</html>
