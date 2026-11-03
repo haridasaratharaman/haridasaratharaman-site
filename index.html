@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hari Dasaratharaman, AI product leader</title>
+<meta name="description" content="Product leader for AI and enterprise platforms: agentic AI, LLM evaluation, and SaaS portfolios at Genesys, OpenText, Oracle, Amazon, and Vodafone.">
+<meta property="og:title" content="Hari Dasaratharaman, AI product leader">
+<meta property="og:description" content="Agentic AI, LLM evaluation, and enterprise SaaS product leadership.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◆</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F4F6; --surface:#FFFFFF; --ink:#17202E; --muted:#596374; --line:#D5DAE1; --accent:#1E56B8; --accent-soft:#DCE6F7;
+  color-scheme:light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#141A23;--surface:#1B2230;--ink:#E8ECF2;--muted:#A0A9B8;--line:#2D3646;--accent:#8EB2FF;--accent-soft:#24314B;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#141A23;--surface:#1B2230;--ink:#E8ECF2;--muted:#A0A9B8;--line:#2D3646;--accent:#8EB2FF;--accent-soft:#24314B;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 24px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 "Source Sans 3",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.wrap{max-width:960px;margin:0 auto;padding:0 22px}
+h1,h2,h3{font-family:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;letter-spacing:-.02em;margin:0}
+p{margin:0 0 12px;max-width:66ch}
+
+.hero{padding:64px 0 40px}
+.hero h1{font-size:clamp(40px,8vw,84px);line-height:.98;font-weight:700}
+.hero h1 span{display:block}
+.role{font-family:"Bricolage Grotesque",sans-serif;font-size:clamp(20px,3vw,26px);font-weight:500;margin:18px 0 12px;color:var(--ink)}
+.intro{font-size:19px;color:var(--muted);max-width:58ch}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.btn{display:inline-flex;align-items:center;padding:10px 16px;border-radius:8px;font-weight:600;font-size:16px;text-decoration:none;border:1px solid var(--ink);background:var(--ink);color:var(--surface)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.place{color:var(--muted);font-size:15px;margin-top:14px}
+
+/* Career rail: the signature element */
+.rail{display:grid;grid-template-columns:repeat(5,1fr);border-top:2px solid var(--ink);margin:8px 0 0}
+.rail a{display:block;padding:12px 12px 14px 0;text-decoration:none;color:var(--ink);border-right:1px solid var(--line);padding-left:12px}
+.rail a:first-child{padding-left:0}
+.rail a:last-child{border-right:0}
+.rail b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:19px;font-weight:700}
+.rail span{font-size:14px;color:var(--muted)}
+@media (max-width:720px){.rail{grid-template-columns:1fr 1fr}.rail a{border-right:0;border-bottom:1px solid var(--line);padding-left:0}}
+
+section{padding:48px 0 8px}
+section > h2{font-size:clamp(26px,4vw,34px);margin-bottom:18px}
+.focus{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.focus h3{font-size:19px;margin-bottom:6px}
+.focus p{color:var(--muted);font-size:16px}
+@media (max-width:720px){.focus{grid-template-columns:1fr;gap:18px}}
+
+.job{display:grid;grid-template-columns:200px 1fr;gap:8px 28px;padding:22px 0;border-top:1px solid var(--line)}
+.job .when{font-size:15px;color:var(--muted)}
+.job .when b{display:block;color:var(--ink);font-family:"Bricolage Grotesque",sans-serif;font-size:20px;font-weight:700;margin-bottom:2px}
+.job h3{font-size:18px;font-weight:500;margin-bottom:8px}
+.job ul{margin:0;padding-left:18px}
+.job li{margin:4px 0;max-width:62ch}
+@media (max-width:720px){.job{grid-template-columns:1fr}}
+
+.project{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 24px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start}
+.project h3{font-size:22px;margin-bottom:6px}
+.project p{color:var(--muted)}
+.status{font-size:14px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:4px 10px;border-radius:999px;white-space:nowrap}
+.skills{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.skills span{font-size:14px;border:1px solid var(--line);border-radius:6px;padding:3px 9px;color:var(--muted)}
+@media (max-width:620px){.project{grid-template-columns:1fr}}
+
+.edu{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.edu b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:19px}
+.edu span{color:var(--muted)}
+@media (max-width:620px){.edu{grid-template-columns:1fr}}
+
+footer{margin-top:56px;border-top:1px solid var(--line);padding:24px 0 40px;color:var(--muted);font-size:15px}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+<header class="hero">
+  <h1><span>Hari</span><span>Dasaratharaman</span></h1>
+  <p class="role">Product leader for AI and enterprise platforms</p>
+  <p class="intro">I take AI products from experiment to reliable production: agentic workflows, LLM evaluation, and the platforms underneath them. 15+ years across enterprise SaaS, marketplaces, and telecom.</p>
+  <div class="links">
+    <a class="btn" href="https://www.linkedin.com/in/hdasaratharaman">LinkedIn</a>
+    <a class="btn ghost" href="mailto:dhariharan23@gmail.com">Email me</a>
+    <a class="btn ghost" href="#projects">See my AI project</a>
+  </div>
+  <p class="place">Based in the Greater Toronto Area, Canada</p>
+</header>
+
+<nav class="rail" aria-label="Career">
+  <a href="#genesys"><b>Genesys</b><span>2025 to now</span></a>
+  <a href="#opentext"><b>OpenText</b><span>2021 to 2024</span></a>
+  <a href="#oracle"><b>Oracle</b><span>2019 to 2021</span></a>
+  <a href="#amazon"><b>Amazon</b><span>2016 to 2019</span></a>
+  <a href="#vodafone"><b>Vodafone</b><span>2011 to 2016</span></a>
+</nav>
+
+<section>
+  <h2>What I work on</h2>
+  <div class="focus">
+    <div><h3>Agentic AI</h3><p>Copilots and agent workflows that surface insights, recommend actions, and keep humans in control of decisions.</p></div>
+    <div><h3>AI quality</h3><p>LLM evaluation, failure taxonomies, drift detection, and human review, so AI holds up in production.</p></div>
+    <div><h3>Platforms at scale</h3><p>APIs, integrations, and portfolio strategy for enterprise products that customers build on.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Experience</h2>
+
+  <div class="job" id="genesys">
+    <div class="when"><b>Genesys</b>Jul 2025 to now<br>Toronto</div>
+    <div><h3>Product Leader, Agentic AI and Enterprise Workflows</h3>
+      <ul>
+        <li>Own AI Scoring and Topic Miner within Virtual Supervisor in Genesys Cloud.</li>
+        <li>Lead LLM-driven evaluation, automated scoring, and agentic supervisor workflows for enterprise contact centers.</li>
+        <li>Built AI quality practices: failure taxonomy, drift detection, evaluation metrics, and human review.</li>
+        <li>Own customer surveys, now extending them from voice to messaging channels.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="job" id="opentext">
+    <div class="when"><b>OpenText</b>Aug 2021 to Jul 2024<br>Toronto</div>
+    <div><h3>Director, Product Management</h3>
+      <ul>
+        <li>Led product strategy for a $650M+ enterprise SaaS portfolio of 45 products in OpenText Business Network.</li>
+        <li>Drove 12% portfolio growth and a 13% conversion lift; led a global team of 10 product managers.</li>
+        <li>Modernized legacy B2B transaction and compliance platforms into cloud-native services.</li>
+        <li>Launched Trading Grid Command Center, cutting customer support interactions by 19%.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="job" id="oracle">
+    <div class="when"><b>Oracle</b>Feb 2019 to Aug 2021<br>Toronto</div>
+    <div><h3>Senior Principal Product Manager</h3>
+      <ul>
+        <li>Built an AI/ML document intelligence platform from 0 to 1, reaching $12M in annual revenue.</li>
+        <li>Defined ML and NLP capabilities for classification, extraction, and search of enterprise content.</li>
+        <li>Represented the product to Gartner and IDC and at executive customer briefings.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="job" id="amazon">
+    <div class="when"><b>Amazon</b>Oct 2016 to Jan 2019<br>Luxembourg</div>
+    <div><h3>Senior Product Manager, Automotive EU</h3>
+      <ul>
+        <li>Launched Part Finder and ML-driven recommendations across 25M+ listings in Europe.</li>
+        <li>Grew sales 17% and conversion 27% while cutting returns 12%.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="job" id="vodafone">
+    <div class="when"><b>Vodafone</b>Jun 2011 to Sep 2016<br>Chennai and Dublin</div>
+    <div><h3>Senior Manager, Product</h3>
+      <ul>
+        <li>Led a $65M+ revenue data products portfolio, then prepaid products for 1M+ customers in Ireland.</li>
+        <li>Launched self-service products that reduced call center volume by 20%.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <h2>What I’m building</h2>
+  <div class="project">
+    <div>
+      <h3>AI conversation auditor</h3>
+      <p>Paste any AI chatbot conversation and choose what to check: abusive language, personal data, prompt injection, off-policy promises, or hallucination. An agent picks the right model for each check, runs them through an MCP server, and returns a ship, review, or block verdict with evidence, cost, and latency.</p>
+      <div class="skills"><span>Agentic workflows</span><span>MCP</span><span>Guardrails</span><span>Model comparison</span><span>Observability</span></div>
+    </div>
+    <span class="status">In progress</span>
+  </div>
+</section>
+
+<section>
+  <h2>Education</h2>
+  <div class="edu">
+    <div><b>IIM Lucknow</b><span>PGDM (MBA), 2011</span></div>
+    <div><b>NIT Trichy</b><span>B.Tech, 2007</span></div>
+  </div>
+</section>
+
+<footer>© 2026 Hari Dasaratharaman. Views and projects here are my own.</footer>
+</main>
+</body>
+</html>
