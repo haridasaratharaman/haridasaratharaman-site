@@ -108,6 +108,7 @@ a.card:hover{border-color:rgba(242,179,90,.55);transform:translateY(-2px)}
 .job ul{margin:0;padding-left:18px;color:#D3DAE4}
 .job li{margin:5px 0;max-width:62ch}
 .job li::marker{color:var(--gold)}
+.job p{color:#D3DAE4;margin:0;max-width:64ch}
 @media (max-width:720px){.job{grid-template-columns:1fr}}
 
 .edu{display:grid;grid-template-columns:1fr 1fr;gap:18px}
@@ -133,7 +134,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
   <div class="wrap">
     <a class="mark" href="#top"><i>HD</i>Hari Dasaratharaman</a>
     <nav aria-label="Main">
-      <a href="#work">Work</a>
+      <a href="#work">Projects</a>
       <a href="#experience">Experience</a>
       <a class="keep" href="https://www.linkedin.com/in/hdasaratharaman">LinkedIn</a>
     </nav>
@@ -155,7 +156,6 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
     <p class="intro">I take AI products from experiment to reliable production: agentic workflows, LLM evaluation, and the platforms underneath them. 15+ years across enterprise SaaS, marketplaces, and telecom.</p>
     <div class="ctas">
       <a class="btn primary" href="https://www.linkedin.com/in/hdasaratharaman"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.1c.5-1 1.8-2 3.8-2 4 0 4.8 2.6 4.8 6V21h-4v-5.6c0-1.3 0-3-1.9-3s-2.2 1.5-2.2 2.9V21H9z"/></svg>Connect on LinkedIn</a>
-      <a class="btn ghost" href="Hari_Dasaratharaman_Resume.pdf" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>Download resume</a>
       <a class="btn ghost" href="mailto:dhariharan23@gmail.com">Email me</a>
     </div>
     <p class="place">Greater Toronto Area, Canada</p>
@@ -172,8 +172,8 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
 
 <section id="work">
   <div class="shead">
-    <h2>Featured work</h2>
-    <p>Things I’ve built on my own time to show how I think about AI quality, guardrails, and agents.</p>
+    <h2>What I’m building</h2>
+    <p>Things I build on my own time to explore AI quality, guardrails, and agents.</p>
   </div>
   <div class="work">
     <a class="card lead" href="evaluation-demo.html">
@@ -203,60 +203,25 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
 
 <section id="experience">
   <div class="shead"><h2>Experience</h2></div>
-
   <div class="job" id="genesys">
     <div class="when"><b>Genesys</b>Jul 2025 to now<br>Toronto</div>
-    <div><h3>Product Leader, Agentic AI and Enterprise Workflows</h3>
-      <ul>
-        <li>Own AI Scoring and Topic Miner within Virtual Supervisor in Genesys Cloud.</li>
-        <li>Lead LLM-driven evaluation, automated scoring, and agentic supervisor workflows for enterprise contact centers.</li>
-        <li>Built AI quality practices: failure taxonomy, drift detection, evaluation metrics, and human review.</li>
-        <li>Own customer surveys, now extending them from voice to messaging channels.</li>
-      </ul>
-    </div>
+    <div><h3>Product Leader</h3><p>I lead product for quality management evaluations and customer surveys in Genesys Cloud, and own surveys end to end, from strategy through rollout and adoption. My work spans evaluation workflows for enterprise contact centers and agentic AI workflows that surface insights, recommend actions, and keep supervisors in control. I extended surveys from voice to messaging channels and partner closely with engineering, data science, and go-to-market teams.</p></div>
   </div>
-
   <div class="job" id="opentext">
     <div class="when"><b>OpenText</b>Aug 2021 to Jul 2024<br>Toronto</div>
-    <div><h3>Director, Product Management</h3>
-      <ul>
-        <li>Led product strategy for a $650M+ enterprise SaaS portfolio of 45 products in OpenText Business Network.</li>
-        <li>Drove 12% portfolio growth and a 13% conversion lift; led a global team of 10 product managers.</li>
-        <li>Modernized legacy B2B transaction and compliance platforms into cloud-native services.</li>
-        <li>Launched Trading Grid Command Center, cutting customer support interactions by 19%.</li>
-      </ul>
-    </div>
+    <div><h3>Director, Product Management</h3><p>I led product strategy for a $650M+ enterprise SaaS portfolio of 45 products in OpenText Business Network, with a global team of 10 product managers. We grew the portfolio 12% and lifted conversion 13% while modernizing legacy B2B transaction and compliance platforms into cloud-native services. I launched Trading Grid Command Center, which cut customer support interactions by 19%.</p></div>
   </div>
-
   <div class="job" id="oracle">
     <div class="when"><b>Oracle</b>Feb 2019 to Aug 2021<br>Toronto</div>
-    <div><h3>Senior Principal Product Manager</h3>
-      <ul>
-        <li>Built an AI/ML document intelligence platform from 0 to 1, reaching $12M in annual revenue.</li>
-        <li>Defined ML and NLP capabilities for classification, extraction, and search of enterprise content.</li>
-        <li>Represented the product to Gartner and IDC and at executive customer briefings.</li>
-      </ul>
-    </div>
+    <div><h3>Senior Principal Product Manager</h3><p>I built an AI/ML document intelligence platform from 0 to 1 that reached $12M in annual revenue, defining the ML and NLP capabilities that classify, extract, and search enterprise content. I led a product team of three and represented the product to Gartner, IDC, and executive customers.</p></div>
   </div>
-
   <div class="job" id="amazon">
     <div class="when"><b>Amazon</b>Oct 2016 to Jan 2019<br>Luxembourg</div>
-    <div><h3>Senior Product Manager, Automotive EU</h3>
-      <ul>
-        <li>Launched Part Finder and ML-driven recommendations across 25M+ listings in Europe.</li>
-        <li>Grew sales 17% and conversion 27% while cutting returns 12%.</li>
-      </ul>
-    </div>
+    <div><h3>Senior Product Manager, Automotive EU</h3><p>I led product for Amazon Automotive across Europe, launching Part Finder and ML-driven recommendations across 25M+ listings. Sales grew 17% and conversion rose 27%, while returns fell 12%.</p></div>
   </div>
-
   <div class="job" id="vodafone">
     <div class="when"><b>Vodafone</b>Jun 2011 to Sep 2016<br>Chennai and Dublin</div>
-    <div><h3>Senior Manager, Product</h3>
-      <ul>
-        <li>Led a $65M+ revenue data products portfolio, then prepaid products for 1M+ customers in Ireland.</li>
-        <li>Launched self-service products that reduced call center volume by 20%.</li>
-      </ul>
-    </div>
+    <div><h3>Senior Manager, Product</h3><p>I led a $65M+ revenue data products portfolio in India, then moved to Dublin through Vodafone’s Global Transfer program to lead prepaid products for 1M+ customers in Ireland. Self-service products I launched reduced call center volume by 20%.</p></div>
   </div>
 </section>
 
